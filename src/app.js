@@ -23,20 +23,27 @@ app.post("/api/test", async (req, res) => {
     },
   } = req;
 
+  let sendData = [];
+
   try {
-    await firestore
+    await firestore // firestore 접근
       .collection("Memo")
       .get()
       .then((response) =>
-        response.forEach((doc) => {
-          console.log(doc.data().title);
-          console.log(doc.data().content);
-          console.log("=======================");
-        })
-      );
+        response.forEach((doc) =>
+          sendData.push({
+            refKey: doc.id, // doc이 갖고있는 refkey
+            title: doc.data().title, // doc이 갖고있는 title
+            content: doc.data().content, // doc이 갖고있는 content
+            regDate: doc.data().regDate, // doc이 갖고있는 regDate
+          })
+        )
+      ); // response가 3개면 push 에서도 3개, response가 4개면 push 에서도 4개 받아온다.
   } catch (e) {
     console.log(e);
   }
+
+  return res.json(sendData);
 });
 
 app.listen(PORT, () => {
